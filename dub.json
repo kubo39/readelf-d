@@ -1,0 +1,13 @@
+{
+	"name": "readelf-d",
+	"authors": [
+		"Hiroki Noda"
+	],
+    "dependencies": {
+        "elf-d": "0.2.1"
+    },
+	"targetType": "executable",
+	"description": "readelf implementation by D.",
+	"copyright": "Copyright © 2016, hiroki.noda",
+	"license": "MIT"
+}
