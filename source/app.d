@@ -121,13 +121,14 @@ void printSectionHeaders(ELF elf)
 
 void printSymbols(ELF elf)
 {
-    writeln(`Symbol table:
-  Num: Value Size Type Bind Vis Ndx Name
-`);
     foreach (section; only(".symtab", ".dynsym"))
     {
         auto s = elf.getSection(section);
-        foreach (n, symbol; SymbolTable(s).symbols.enumerate)
+        auto symbolTable = SymbolTable(s);
+        writefln(`Symbol table '%s':
+  Num: Value Size Type Bind Vis Ndx Name`, section);
+
+        foreach (n, symbol; symbolTable.symbols.enumerate)
         {
             string name;
             if (symbol.name.length > 25)
