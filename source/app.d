@@ -8,13 +8,36 @@ void main(string[] args)
     bool help, fileHeader, programHeaders, sectionHeaders;
     string filename;
 
-    getopt(
-        args,
-        "h|file-header", &fileHeader,
-        "l|program-headers", &programHeaders,
-        "S|section-headers", &sectionHeaders,
-        "f|file-name", &filename
-        );
+    try
+    {
+        getopt(
+            args,
+            "h|file-header", &fileHeader,
+            "l|program-headers", &programHeaders,
+            "S|section-headers", &sectionHeaders,
+            std.getopt.config.required,
+            "f|file-name", &filename,
+            "H|help", &help
+            );
+    }
+    catch (GetOptException)
+    {
+        help = true;
+    }
+
+    if (help)
+    {
+        writeln(`readelf-d
+USAGE:
+ readelf-d [OPTION] [ARG]..
+ Display information about the contents of ELF format files
+ Options are:
+  -h --file-header       Display the ELF file header
+  -S --section-headers   Display the sections' header
+  -H --help              Display this information
+`);
+        return;
+    }
 
     auto elf = ELF.fromFile(filename);
     if (fileHeader)
