@@ -6,13 +6,14 @@ import std.stdio;
 
 void main(string[] args)
 {
-    bool help, fileHeader, sectionHeaders;
+    bool help, all, fileHeader, sectionHeaders;
     string filename;
 
     try
     {
         getopt(
             args,
+            "a|all", &all,
             "h|file-header", &fileHeader,
             "S|section-headers", &sectionHeaders,
             std.getopt.config.required,
@@ -32,6 +33,7 @@ USAGE:
  readelf-d [OPTION] [ARG]..
  Display information about the contents of ELF format files
  Options are:
+  -a --all               Equivalent to: -h -S
   -h --file-header       Display the ELF file header
   -S --section-headers   Display the sections' header
   -f --file-name         ELF file to inspect
@@ -41,9 +43,9 @@ USAGE:
     }
 
     auto elf = ELF.fromFile(filename);
-    if (fileHeader)
+    if (all || fileHeader)
         printELFHeader(elf);
-    if (sectionHeaders)
+    if (all || sectionHeaders)
         printSectionHeaders(elf);
 }
 
