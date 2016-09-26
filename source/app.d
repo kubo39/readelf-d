@@ -52,9 +52,13 @@ void printELFHeader(ELF elf)
     writefln(`
 ELF Header:
   Magic: %s
+  Class: %s
+  Data: %s
   Type: %s
   Machine: %s
-  Version: %s
+  Version: %#x
+  OS/ABI: %s
+  ABI Version: %s
   Entry point address: %#x
   Start of program headers: %d
   Start of section headers: %d
@@ -64,10 +68,14 @@ ELF Header:
   Number of section headers: %d
   Section header string table index: %d
 `,
-             elf.header.identifier,
+             elf.header.identifier.data,
+             elf.header.identifier.fileClass,
+             elf.header.identifier.dataEncoding,
              elf.header.objectFileType,
              elf.header.machineISA,
              elf.header.version_,
+             elf.header.identifier.osABI,
+             elf.header.identifier.abiVersion,
              elf.header.entryPoint,
              elf.header.programHeaderOffset,
              elf.header.sectionHeaderOffset,
