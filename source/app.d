@@ -6,16 +6,18 @@ import std.stdio;
 
 void main(string[] args)
 {
-    bool help, all, fileHeader, sectionHeaders;
+    bool help, all, fileHeader, sectionHeaders, symbols;
     string filename;
 
     try
     {
         getopt(
             args,
+            std.getopt.config.caseSensitive,
             "a|all", &all,
             "h|file-header", &fileHeader,
             "S|section-headers", &sectionHeaders,
+            "s|symbols", &symbols,
             std.getopt.config.required,
             "f|file-name", &filename,
             "H|help", &help
@@ -33,9 +35,10 @@ USAGE:
  readelf-d [OPTION] [ARG]..
  Display information about the contents of ELF format files
  Options are:
-  -a --all               Equivalent to: -h -S
+  -a --all               Equivalent to: -h -S -s
   -h --file-header       Display the ELF file header
-  -S --section-headers   Display the sections' header
+  -S --section-headers   Display section's headers
+  -s --symbols           Display the symbol table
   -f --file-name         ELF file to inspect
   -H --help              Display this information
 `);
@@ -46,6 +49,7 @@ USAGE:
     {
         fileHeader = true;
         sectionHeaders = true;
+        symbols = true;
     }
 
     auto elf = ELF.fromFile(filename);
@@ -53,6 +57,8 @@ USAGE:
         printELFHeader(elf);
     if (sectionHeaders)
         printSectionHeaders(elf);
+    if (symbols)
+        printSymbols(elf);
 }
 
 void printELFHeader(ELF elf)
@@ -111,4 +117,33 @@ void printSectionHeaders(ELF elf)
                  section.link,
                  section.info,
                  section.addrAlign);
+}
+
+void printSymbols(ELF elf)
+{
+    writeln(`Symbol table:
+  Num: Value Size Type Bind Vis Ndx Name
+`);
+    foreach (section; only(".symtab", ".dynsym"))
+    {
+        auto s = elf.getSection(section);
+        foreach (n, symbol; SymbolTable(s).symbols.enumerate)
+        {
+            string name;
+            if (symbol.name.length > 25)
+                name = symbol.name[0 .. 25];
+            else
+                name = symbol.name;
+            writefln(`  [%d] %s %d %s %s %s %s %s`,
+                     n,
+                     symbol.value,
+                     symbol.size,
+                     symbol.type,
+                     symbol.binding,
+                     symbol.info,
+                     symbol.sectionIndex,
+                     name
+                );
+        }
+    }
 }
