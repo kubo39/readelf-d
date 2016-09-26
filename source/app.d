@@ -6,7 +6,7 @@ import std.stdio;
 
 void main(string[] args)
 {
-    bool help, fileHeader, programHeaders, sectionHeaders;
+    bool help, fileHeader, sectionHeaders;
     string filename;
 
     try
@@ -14,7 +14,6 @@ void main(string[] args)
         getopt(
             args,
             "h|file-header", &fileHeader,
-            "l|program-headers", &programHeaders,
             "S|section-headers", &sectionHeaders,
             std.getopt.config.required,
             "f|file-name", &filename,
@@ -35,6 +34,7 @@ USAGE:
  Options are:
   -h --file-header       Display the ELF file header
   -S --section-headers   Display the sections' header
+  -f --file-name         ELF file to inspect
   -H --help              Display this information
 `);
         return;
