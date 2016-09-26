@@ -42,10 +42,16 @@ USAGE:
         return;
     }
 
+    if (all)
+    {
+        fileHeader = true;
+        sectionHeaders = true;
+    }
+
     auto elf = ELF.fromFile(filename);
-    if (all || fileHeader)
+    if (fileHeader)
         printELFHeader(elf);
-    if (all || sectionHeaders)
+    if (sectionHeaders)
         printSectionHeaders(elf);
 }
 
