@@ -1,6 +1,7 @@
 import elf;
 
 import std.getopt;
+import std.range;
 import std.stdio;
 
 void main(string[] args)
@@ -80,9 +81,11 @@ ELF Header:
 
 void printSectionHeaders(ELF elf)
 {
-    writeln("Name Type Address Offset Size EntSize Flags Link Info Align");
-    foreach (section; elf.sections)
-        writefln("%s %s %#o %#o %#o %d %s %s %s",
+    writeln(`Section Headers:
+ [Nr] Name Type Address Offset Size EntSize Flags Link Info Align`);
+    foreach (n, section; elf.sections.enumerate)
+        writefln(" [%d] %s %s %#o %#o %#o %d %s %s %s",
+                 n,
                  section.name,
                  section.type,
                  section.address,
