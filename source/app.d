@@ -62,16 +62,7 @@ void main(string[] args)
         symbols = true;
     }
 
-    ELF elf;
-    try
-    {
-        elf = ELF.fromFile(filename);
-    }
-    catch (ELFException)
-    {
-        usage();
-        return;
-    }
+    ELF elf = ELF.fromFile(filename);
 
     if (fileHeader)
         printELFHeader(elf);
