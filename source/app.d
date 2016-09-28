@@ -41,19 +41,13 @@ void main(string[] args)
         "H|help", &help
         );
 
-    if (args.length < 2)
+    if (help || args.length < 2)
     {
         usage();
         return;
     }
 
     string filename = args[1];
-
-    if (help)
-    {
-        usage();
-        return;
-    }
 
     if (all)
     {
