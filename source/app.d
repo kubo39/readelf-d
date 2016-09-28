@@ -124,6 +124,7 @@ void printSymbols(ELF elf)
     foreach (section; only(".dynsym", ".symtab"))
     {
         auto s = elf.getSection(section);
+        if (s.isNull) continue;  // skip if it hasn't.
         auto symbols = SymbolTable(s).symbols;
         writefln(`Symbol table '%s' contains %d entries:
   Num: Value Size Type Bind Vis Ndx Name`, section, symbols.walkLength);
