@@ -31,7 +31,7 @@ void main(string[] args)
 
     bool help, all, fileHeader, sectionHeaders, symbols;
 
-    auto option = getopt(
+    getopt(
         args,
         std.getopt.config.caseSensitive,
         "a|all", &all,
