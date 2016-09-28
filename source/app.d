@@ -3,47 +3,51 @@ import elf;
 import std.getopt;
 import std.range;
 import std.stdio;
+import core.stdc.stdlib : exit;
 
 
 void usage()
 {
     writeln(`readelf-d
 USAGE:
- readelf-d [OPTION] [ARG]..
+ readelf-d [OPTION] elf-file..
  Display information about the contents of ELF format files
  Options are:
   -a --all               Equivalent to: -h -S -s
   -h --file-header       Display the ELF file header
   -S --section-headers   Display sections' headers
   -s --symbols           Display the symbol table
-  -f --file-name         ELF file to inspect
   -H --help              Display this information
 `);
 }
 
 void main(string[] args)
 {
-    bool help, all, fileHeader, sectionHeaders, symbols;
-    string filename;
+    scope(failure)
+    {
+        usage();
+        exit(1);
+    }
 
-    try
+    bool help, all, fileHeader, sectionHeaders, symbols;
+
+    auto option = getopt(
+        args,
+        std.getopt.config.caseSensitive,
+        "a|all", &all,
+        "h|file-header", &fileHeader,
+        "S|section-headers", &sectionHeaders,
+        "s|symbols", &symbols,
+        "H|help", &help
+        );
+
+    if (args.length < 2)
     {
-        getopt(
-            args,
-            std.getopt.config.caseSensitive,
-            "a|all", &all,
-            "h|file-header", &fileHeader,
-            "S|section-headers", &sectionHeaders,
-            "s|symbols", &symbols,
-            std.getopt.config.required,
-            "f|file-name", &filename,
-            "H|help", &help
-            );
+        usage();
+        return;
     }
-    catch (GetOptException)
-    {
-        help = true;
-    }
+
+    string filename = args[1];
 
     if (help)
     {
