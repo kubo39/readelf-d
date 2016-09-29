@@ -47,8 +47,6 @@ void main(string[] args)
         return;
     }
 
-    string filename = args[1];
-
     if (all)
     {
         fileHeader = true;
@@ -56,7 +54,7 @@ void main(string[] args)
         symbols = true;
     }
 
-    ELF elf = ELF.fromFile(filename);
+    ELF elf = ELF.fromFile(args[1]);
 
     if (fileHeader)
         printELFHeader(elf);
