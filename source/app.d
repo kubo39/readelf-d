@@ -15,6 +15,7 @@ USAGE:
  Options are:
   -a --all               Equivalent to: -h -S -s
   -h --file-header       Display the ELF file header
+  -l --program-headers   Display the program headers
   -S --section-headers   Display sections' headers
   -s --symbols           Display the symbol table
   -H --help              Display this information
@@ -29,13 +30,14 @@ void main(string[] args)
         exit(1);
     }
 
-    bool help, all, fileHeader, sectionHeaders, symbols;
+    bool help, all, fileHeader, programHeaders, sectionHeaders, symbols;
 
     getopt(
         args,
         std.getopt.config.caseSensitive,
         "a|all", &all,
         "h|file-header", &fileHeader,
+        "l|program-headers", &programHeaders,
         "S|section-headers", &sectionHeaders,
         "s|symbols", &symbols,
         "H|help", &help
@@ -51,6 +53,7 @@ void main(string[] args)
     {
         fileHeader = true;
         sectionHeaders = true;
+        programHeaders = true;
         symbols = true;
     }
 
@@ -58,6 +61,8 @@ void main(string[] args)
 
     if (fileHeader)
         printELFHeader(elf);
+    if (programHeaders)
+        printProgramHeaders(elf);
     if (sectionHeaders)
         printSectionHeaders(elf);
     if (symbols)
@@ -101,6 +106,22 @@ ELF Header:
              elf.header.sizeOfSectionHeaderEntry,
              elf.header.numberOfSectionHeaderEntries,
              elf.header.sectionHeaderStringTableIndex
+        );
+}
+
+void printProgramHeaders(ELF elf)
+{
+    writefln(`
+Elf file type is %s
+Entry point %#x
+There are %d program headers, starting at offset %d
+
+Program Headers:
+`,
+             elf.header.objectFileType,
+             elf.header.entryPoint,
+             elf.header.numberOfProgramHeaderEntries,
+             elf.header.programHeaderOffset
         );
 }
 
