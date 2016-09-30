@@ -129,11 +129,15 @@ Program Headers:
     auto phdrs = getProgramHeaders(elf);
     foreach (phdr; phdrs)
     {
-        writefln("  %s %#x %#x %#x",
+        writefln("  %s %#x %#x %#x %#x %#x %d %d",
                  phdr.progtype,
                  phdr.offset,
                  phdr.vaddr,
-                 phdr.paddr
+                 phdr.paddr,
+                 phdr.filesz,
+                 phdr.memsz,
+                 phdr.flags,
+                 phdr.align_
             );
     }
 }
