@@ -200,6 +200,7 @@ Phdr[] getProgramHeaders(ELF elf)
                 phdr.filesz = buffer.read!(ulong, Endian.littleEndian);
                 phdr.memsz = buffer.read!(ulong, Endian.littleEndian);
                 phdr.align_ = buffer.read!(ulong, Endian.littleEndian);
+                assert(buffer.length == 0);
                 phdrs ~= phdr;
             }
             return phdrs;
@@ -220,6 +221,7 @@ Phdr[] getProgramHeaders(ELF elf)
                 phdr.filesz = buffer.read!(ulong, Endian.bigEndian);
                 phdr.memsz = buffer.read!(ulong, Endian.bigEndian);
                 phdr.align_ = buffer.read!(ulong, Endian.bigEndian);
+                assert(buffer.length == 0);
                 phdrs ~= phdr;
             }
             return phdrs;
