@@ -172,7 +172,9 @@ enum ProgType
 
 Phdr[] getProgramHeaders(ELF elf)
 {
+    auto phdrLen = elf.header.numberOfProgramHeaderEntries;
     Phdr[] phdrs;
+    phdrs.reserve(phdrLen);
 
     // 64bit.
     if (elf.header.identifier.fileClass == FileClass.class64)
@@ -180,7 +182,7 @@ Phdr[] getProgramHeaders(ELF elf)
         // littleEndian.
         if (elf.header.identifier.dataEncoding == DataEncoding.littleEndian)
         {
-            foreach (i; 0 .. elf.header.numberOfProgramHeaderEntries)
+            foreach (i; 0 .. phdrLen)
             {
                 auto start = elf.header.programHeaderOffset + 56 * i;
                 auto phdr = new Phdr64;
