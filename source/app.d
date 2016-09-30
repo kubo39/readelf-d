@@ -120,8 +120,7 @@ Entry point %#x
 There are %d program headers, starting at offset %d
 
 Program Headers:
-  Type Offset VirtAddr PhysAddr FileSiz MemSiz Flags Align
-`,
+  Type Offset VirtAddr PhysAddr FileSiz MemSiz Flags Align`,
              elf.header.objectFileType,
              elf.header.entryPoint,
              elf.header.numberOfProgramHeaderEntries,
@@ -130,7 +129,7 @@ Program Headers:
     auto phdrs = getProgramHeaders(elf);
     foreach (phdr; phdrs)
     {
-        writefln("  %d %#x %#x %#x",
+        writefln("  %s %#x %#x %#x",
                  phdr.progtype,
                  phdr.offset,
                  phdr.vaddr,
@@ -141,7 +140,7 @@ Program Headers:
 
 abstract class Phdr
 {
-    uint progtype;
+    ProgType progtype;
     uint flags;
     size_t offset;
     size_t vaddr;
@@ -154,6 +153,22 @@ abstract class Phdr
 final class Phdr64 : Phdr
 {
 }
+
+enum ProgType
+{
+    NULL = 0,
+    LOAD = 1,
+    DYNAMIC = 2,
+    INTERP = 3,
+    NOTE = 4,
+    SHLIB = 5,
+    PHDR = 6,
+    TLS = 7,
+    GNU_EH_FRAME = 0x6474e550,
+    GNU_STACK = 0x6474e551,
+    GNU_RELRO = 0x6474e552
+}
+
 
 Phdr[] getProgramHeaders(ELF elf)
 {
@@ -171,7 +186,7 @@ Phdr[] getProgramHeaders(ELF elf)
                 auto phdr = new Phdr64;
 
                 auto buffer = cast(ubyte[]) elf.m_file[start .. start + 56].dup;
-                phdr.progtype = buffer.read!(uint, Endian.littleEndian);
+                phdr.progtype = cast(ProgType) buffer.read!(uint, Endian.littleEndian);
                 phdr.flags = buffer.read!(uint, Endian.littleEndian);
                 phdr.offset = buffer.read!(ulong, Endian.littleEndian);
                 phdr.vaddr = buffer.read!(ulong, Endian.littleEndian);
