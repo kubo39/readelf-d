@@ -211,7 +211,7 @@ Phdr[] getProgramHeaders(ELF elf)
         }
     }
     // TODO: 32bit.
-    assert(false);
+    assert(false, "Sorry, 32-bit arch is not supported yet.");
 }
 
 void printSectionHeaders(ELF elf)
