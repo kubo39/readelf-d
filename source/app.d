@@ -204,10 +204,25 @@ Phdr[] getProgramHeaders(ELF elf)
             }
             return phdrs;
         }
-        // TODO: bigEndian.
-        else
+        else  // bigEndian.
         {
-            assert(false);
+            foreach (i; 0 .. phdrLen)
+            {
+                auto start = elf.header.programHeaderOffset + 56 * i;
+                auto phdr = new Phdr64;
+
+                auto buffer = cast(ubyte[]) elf.m_file[start .. start + 56].dup;
+                phdr.progtype = cast(ProgType) buffer.read!(uint, Endian.bigEndian);
+                phdr.flags = buffer.read!(uint, Endian.bigEndian);
+                phdr.offset = buffer.read!(ulong, Endian.bigEndian);
+                phdr.vaddr = buffer.read!(ulong, Endian.bigEndian);
+                phdr.paddr = buffer.read!(ulong, Endian.bigEndian);
+                phdr.filesz = buffer.read!(ulong, Endian.bigEndian);
+                phdr.memsz = buffer.read!(ulong, Endian.bigEndian);
+                phdr.align_ = buffer.read!(ulong, Endian.bigEndian);
+                phdrs ~= phdr;
+            }
+            return phdrs;
         }
     }
     // TODO: 32bit.
