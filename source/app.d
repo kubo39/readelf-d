@@ -1,9 +1,12 @@
 import elf;
+import elf.low;
 
 import std.getopt;
 import std.range;
 import std.stdio;
 import core.stdc.stdlib : exit;
+import std.system;
+import std.bitmanip;
 
 
 void usage()
@@ -117,12 +120,77 @@ Entry point %#x
 There are %d program headers, starting at offset %d
 
 Program Headers:
+  Type Offset VirtAddr PhysAddr FileSiz MemSiz Flags Align
 `,
              elf.header.objectFileType,
              elf.header.entryPoint,
              elf.header.numberOfProgramHeaderEntries,
              elf.header.programHeaderOffset
         );
+    auto phdrs = getProgramHeaders(elf);
+    foreach (phdr; phdrs)
+    {
+        writefln("  %d %#x %#x %#x",
+                 phdr.progtype,
+                 phdr.offset,
+                 phdr.vaddr,
+                 phdr.paddr
+            );
+    }
+}
+
+abstract class Phdr
+{
+    uint progtype;
+    uint flags;
+    size_t offset;
+    size_t vaddr;
+    size_t paddr;
+    size_t filesz;
+    size_t memsz;
+    size_t align_;
+}
+
+final class Phdr64 : Phdr
+{
+}
+
+Phdr[] getProgramHeaders(ELF elf)
+{
+    Phdr[] phdrs;
+
+    // 64bit.
+    if (elf.header.identifier.fileClass == FileClass.class64)
+    {
+        // littleEndian.
+        if (elf.header.identifier.dataEncoding == DataEncoding.littleEndian)
+        {
+            foreach (i; 0 .. elf.header.numberOfProgramHeaderEntries)
+            {
+                auto start = elf.header.programHeaderOffset + 56 * i;
+                auto phdr = new Phdr64;
+
+                auto buffer = cast(ubyte[]) elf.m_file[start .. start + 56].dup;
+                phdr.progtype = buffer.read!(uint, Endian.littleEndian);
+                phdr.flags = buffer.read!(uint, Endian.littleEndian);
+                phdr.offset = buffer.read!(ulong, Endian.littleEndian);
+                phdr.vaddr = buffer.read!(ulong, Endian.littleEndian);
+                phdr.paddr = buffer.read!(ulong, Endian.littleEndian);
+                phdr.filesz = buffer.read!(ulong, Endian.littleEndian);
+                phdr.memsz = buffer.read!(ulong, Endian.littleEndian);
+                phdr.align_ = buffer.read!(ulong, Endian.littleEndian);
+                phdrs ~= phdr;
+            }
+            return phdrs;
+        }
+        // TODO: bigEndian.
+        else
+        {
+            assert(false);
+        }
+    }
+    // TODO: 32bit.
+    assert(false);
 }
 
 void printSectionHeaders(ELF elf)
