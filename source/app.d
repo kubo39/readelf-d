@@ -142,7 +142,7 @@ Program Headers:
     }
 }
 
-// specialized for ProgramFlangs
+// specialized for ProgramFlags.
 string toString(ProgramFlags flags)
 {
     import std.format;
