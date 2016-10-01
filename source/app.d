@@ -129,23 +129,33 @@ Program Headers:
     auto phdrs = getProgramHeaders(elf);
     foreach (phdr; phdrs)
     {
-        writefln("  %s %#x %#x %#x %#x %#x %d %d",
+        writefln("  %s %#x %#x %#x %#x %#x %s %d",
                  phdr.progtype,
                  phdr.offset,
                  phdr.vaddr,
                  phdr.paddr,
                  phdr.filesz,
                  phdr.memsz,
-                 phdr.flags,
+                 toString(phdr.flags),
                  phdr.align_
             );
     }
 }
 
+// specialized for ProgramFlangs
+string toString(ProgramFlags flags)
+{
+    import std.format;
+    return format("%s%s%s",
+                  flags & ProgramFlags.READABLE ? "R" : " ",
+                  flags & ProgramFlags.WRITABLE ? "W" : " ",
+                  flags & ProgramFlags.EXECUTABLE ? "E" : " ");
+}
+
 abstract class Phdr
 {
-    ProgType progtype;
-    uint flags;
+    ProgramType progtype;
+    ProgramFlags flags;
     size_t offset;
     size_t vaddr;
     size_t paddr;
@@ -158,7 +168,7 @@ final class Phdr64 : Phdr
 {
 }
 
-enum ProgType
+enum ProgramType
 {
     NULL = 0,
     LOAD = 1,
@@ -173,6 +183,13 @@ enum ProgType
     GNU_RELRO = 0x6474e552
 }
 
+enum ProgramFlags
+{
+    NONE = 0,
+    EXECUTABLE = 1,
+    WRITABLE = 2,
+    READABLE = 3
+}
 
 Phdr[] getProgramHeaders(ELF elf)
 {
@@ -192,8 +209,8 @@ Phdr[] getProgramHeaders(ELF elf)
                 auto phdr = new Phdr64;
 
                 auto buffer = cast(ubyte[]) elf.m_file[start .. start + 56].dup;
-                phdr.progtype = cast(ProgType) buffer.read!(uint, Endian.littleEndian);
-                phdr.flags = buffer.read!(uint, Endian.littleEndian);
+                phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.littleEndian);
+                phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.littleEndian);
                 phdr.offset = buffer.read!(ulong, Endian.littleEndian);
                 phdr.vaddr = buffer.read!(ulong, Endian.littleEndian);
                 phdr.paddr = buffer.read!(ulong, Endian.littleEndian);
@@ -213,8 +230,8 @@ Phdr[] getProgramHeaders(ELF elf)
                 auto phdr = new Phdr64;
 
                 auto buffer = cast(ubyte[]) elf.m_file[start .. start + 56].dup;
-                phdr.progtype = cast(ProgType) buffer.read!(uint, Endian.bigEndian);
-                phdr.flags = buffer.read!(uint, Endian.bigEndian);
+                phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.bigEndian);
+                phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.bigEndian);
                 phdr.offset = buffer.read!(ulong, Endian.bigEndian);
                 phdr.vaddr = buffer.read!(ulong, Endian.bigEndian);
                 phdr.paddr = buffer.read!(ulong, Endian.bigEndian);
