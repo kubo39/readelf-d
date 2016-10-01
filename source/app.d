@@ -25,6 +25,7 @@ USAGE:
 `);
 }
 
+
 void main(string[] args)
 {
     scope(failure)
@@ -72,6 +73,7 @@ void main(string[] args)
         printSymbols(elf);
 }
 
+
 void printELFHeader(ELF elf)
 {
     writefln(`
@@ -112,6 +114,7 @@ ELF Header:
         );
 }
 
+
 void printProgramHeaders(ELF elf)
 {
     writefln(`
@@ -142,6 +145,7 @@ Program Headers:
     }
 }
 
+
 // specialized for ProgramFlags.
 string toString(ProgramFlags flags)
 {
@@ -151,6 +155,7 @@ string toString(ProgramFlags flags)
                   flags & ProgramFlags.WRITABLE ? "W" : " ",
                   flags & ProgramFlags.EXECUTABLE ? "E" : " ");
 }
+
 
 abstract class Phdr
 {
@@ -164,11 +169,14 @@ abstract class Phdr
     size_t align_;
 }
 
+
 final class Phdr64 : Phdr
 {
 }
 
+
 immutable sizeOfPogramHeader = 56;
+
 
 enum ProgramType
 {
@@ -185,6 +193,7 @@ enum ProgramType
     GNU_RELRO = 0x6474e552
 }
 
+
 enum ProgramFlags
 {
     NONE = 0,
@@ -192,6 +201,7 @@ enum ProgramFlags
     WRITABLE = 2,
     READABLE = 3
 }
+
 
 Phdr[] getProgramHeaders(ELF elf)
 {
@@ -250,6 +260,7 @@ Phdr[] getProgramHeaders(ELF elf)
     assert(false, "Sorry, 32-bit arch is not supported yet.");
 }
 
+
 void printSectionHeaders(ELF elf)
 {
     writeln(`Section Headers:
@@ -267,6 +278,7 @@ void printSectionHeaders(ELF elf)
                  section.info,
                  section.addrAlign);
 }
+
 
 void printSymbols(ELF elf)
 {
