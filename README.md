@@ -1,4 +1,4 @@
-# readelf-d
+# readelf-d [![Build Status](https://secure.travis-ci.org/kubo39/readelf-d.svg?branch=master)](http://travis-ci.org/kubo39/readelf-d)
 
 readelf implementation written in D.
 
