@@ -168,6 +168,8 @@ final class Phdr64 : Phdr
 {
 }
 
+immutable sizeOfPogramHeader = 56;
+
 enum ProgramType
 {
     NULL = 0,
@@ -205,10 +207,10 @@ Phdr[] getProgramHeaders(ELF elf)
         {
             foreach (i; 0 .. phdrLen)
             {
-                auto start = elf.header.programHeaderOffset + 56 * i;
+                auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
                 auto phdr = new Phdr64;
 
-                auto buffer = cast(ubyte[]) elf.m_file[start .. start + 56].dup;
+                auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
                 phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.littleEndian);
                 phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.littleEndian);
                 phdr.offset = buffer.read!(ulong, Endian.littleEndian);
@@ -226,10 +228,10 @@ Phdr[] getProgramHeaders(ELF elf)
         {
             foreach (i; 0 .. phdrLen)
             {
-                auto start = elf.header.programHeaderOffset + 56 * i;
+                auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
                 auto phdr = new Phdr64;
 
-                auto buffer = cast(ubyte[]) elf.m_file[start .. start + 56].dup;
+                auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
                 phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.bigEndian);
                 phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.bigEndian);
                 phdr.offset = buffer.read!(ulong, Endian.bigEndian);
