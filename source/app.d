@@ -5,8 +5,6 @@ import std.getopt;
 import std.range;
 import std.stdio;
 import core.stdc.stdlib : exit;
-import std.system;
-import std.bitmanip;
 
 
 void usage()
@@ -157,7 +155,7 @@ Program Headers:
 // specialized for ProgramFlags.
 string toString(ProgramFlags flags)
 {
-    import std.format;
+    import std.format : format;
     return format("%s%s%s",
                   flags & ProgramFlags.READABLE ? "R" : " ",
                   flags & ProgramFlags.WRITABLE ? "W" : " ",
@@ -213,6 +211,9 @@ enum ProgramFlags
 
 Phdr[] getProgramHeaders(ELF elf)
 {
+    import std.system;
+    import std.bitmanip : read;
+
     auto phdrLen = elf.header.numberOfProgramHeaderEntries;
     Phdr[] phdrs;
     phdrs.reserve(phdrLen);
