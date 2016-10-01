@@ -271,7 +271,8 @@ Phdr[] getProgramHeaders(ELF elf)
 
 void printSectionHeaders(ELF elf)
 {
-    writeln(`Section Headers:
+    writeln(`
+Section Headers:
  [Nr] Name Type Address Offset Size EntSize Flags Link Info Align`);
     foreach (n, section; elf.sections.enumerate)
         writefln(" [%d] %s %s %#o %#o %#o %d %s %s %s",
@@ -295,7 +296,8 @@ void printSymbols(ELF elf)
         auto s = elf.getSection(section);
         if (s.isNull) continue;  // skip if it hasn't.
         auto symbols = SymbolTable(s).symbols;
-        writefln(`Symbol table '%s' contains %d entries:
+        writefln(`
+Symbol table '%s' contains %d entries:
   Num: Value Size Type Bind Vis Ndx Name`, section, symbols.walkLength);
 
         foreach (n, symbol; symbols.enumerate)
