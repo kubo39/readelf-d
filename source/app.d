@@ -16,10 +16,11 @@ USAGE:
  readelf-d [OPTION] elf-file..
  Display information about the contents of ELF format files
  Options are:
-  -a --all               Equivalent to: -h -S -s
+  -a --all               Equivalent to: -h -l -S -s
   -h --file-header       Display the ELF file header
   -l --program-headers   Display the program headers
   -S --section-headers   Display sections' headers
+  -e --headers           Equivalent to: -h -l -S
   -s --symbols           Display the symbol table
   -H --help              Display this information
 `);
@@ -34,7 +35,7 @@ void main(string[] args)
         exit(1);
     }
 
-    bool help, all, fileHeader, programHeaders, sectionHeaders, symbols;
+    bool help, all, fileHeader, programHeaders, sectionHeaders, allHeaders, symbols;
 
     getopt(
         args,
@@ -43,6 +44,7 @@ void main(string[] args)
         "h|file-header", &fileHeader,
         "l|program-headers", &programHeaders,
         "S|section-headers", &sectionHeaders,
+        "e|headers", &allHeaders,
         "s|symbols", &symbols,
         "H|help", &help
         );
@@ -59,6 +61,12 @@ void main(string[] args)
         sectionHeaders = true;
         programHeaders = true;
         symbols = true;
+    }
+    if (allHeaders)
+    {
+        fileHeader = true;
+        sectionHeaders = true;
+        programHeaders = true;
     }
 
     ELF elf = ELF.fromFile(args[1]);
