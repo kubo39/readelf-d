@@ -138,7 +138,7 @@ Program Headers:
     auto phdrs = getProgramHeaders(elf);
     foreach (phdr; phdrs)
     {
-        writefln("  %s %#x %#x %#x %#x %#x %s %d",
+        writefln("  %s %08#x %08#x %08#x %08#x %08#x %s %d",
                  phdr.progtype,
                  phdr.offset,
                  phdr.vaddr,
@@ -276,7 +276,7 @@ void printSectionHeaders(ELF elf)
 Section Headers:
  [Nr] Name Type Address Offset Size EntSize Flags Link Info Align`);
     foreach (n, section; elf.sections.enumerate)
-        writefln(" [%d] %s %s %#o %#o %#o %d %s %s %s",
+        writefln(" [%d] %s %s %08#x %08#x %08#x %s %s %s %s",
                  n,
                  section.name,
                  section.type,
