@@ -221,15 +221,15 @@ Phdr[] getProgramHeaders(ELF elf)
     // 64bit.
     if (elf.header.identifier.fileClass == FileClass.class64)
     {
-        // littleEndian.
-        if (elf.header.identifier.dataEncoding == DataEncoding.littleEndian)
+        foreach (i; 0 .. phdrLen)
         {
-            foreach (i; 0 .. phdrLen)
-            {
-                auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
-                auto phdr = new Phdr64;
+            auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
+            auto phdr = new Phdr64;
+            auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
 
-                auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
+            // littleEndian.
+            if (elf.header.identifier.dataEncoding == DataEncoding.littleEndian)
+            {
                 phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.littleEndian);
                 phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.littleEndian);
                 phdr.offset = buffer.read!(ulong, Endian.littleEndian);
@@ -238,19 +238,9 @@ Phdr[] getProgramHeaders(ELF elf)
                 phdr.filesz = buffer.read!(ulong, Endian.littleEndian);
                 phdr.memsz = buffer.read!(ulong, Endian.littleEndian);
                 phdr.align_ = buffer.read!(ulong, Endian.littleEndian);
-                assert(buffer.length == 0);
-                phdrs ~= phdr;
             }
-            return phdrs;
-        }
-        else  // bigEndian.
-        {
-            foreach (i; 0 .. phdrLen)
+            else  // bigEndian.
             {
-                auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
-                auto phdr = new Phdr64;
-
-                auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
                 phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.bigEndian);
                 phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.bigEndian);
                 phdr.offset = buffer.read!(ulong, Endian.bigEndian);
@@ -259,11 +249,11 @@ Phdr[] getProgramHeaders(ELF elf)
                 phdr.filesz = buffer.read!(ulong, Endian.bigEndian);
                 phdr.memsz = buffer.read!(ulong, Endian.bigEndian);
                 phdr.align_ = buffer.read!(ulong, Endian.bigEndian);
-                assert(buffer.length == 0);
-                phdrs ~= phdr;
             }
-            return phdrs;
+            assert(buffer.length == 0);
+            phdrs ~= phdr;
         }
+        return phdrs;
     }
     // TODO: 32bit.
     assert(false, "Sorry, 32-bit arch is not supported yet.");
