@@ -70,7 +70,7 @@ void main(string[] args)
     ELF elf = ELF.fromFile(args[1]);
 
     if (fileHeader)
-        printELFHeader(elf);
+        printELFHeader(elf.header);
     if (programHeaders)
         printProgramHeaders(elf);
     if (sectionHeaders)
@@ -80,7 +80,7 @@ void main(string[] args)
 }
 
 
-void printELFHeader(ELF elf)
+void printELFHeader(ELFHeader header)
 {
     writefln(`
 ELF Header:
@@ -101,22 +101,22 @@ ELF Header:
   Number of section headers: %d
   Section header string table index: %d
 `,
-             elf.header.identifier.data,
-             elf.header.identifier.fileClass,
-             elf.header.identifier.dataEncoding,
-             elf.header.objectFileType,
-             elf.header.machineISA,
-             elf.header.version_,
-             elf.header.identifier.osABI,
-             elf.header.identifier.abiVersion,
-             elf.header.entryPoint,
-             elf.header.programHeaderOffset,
-             elf.header.sectionHeaderOffset,
-             elf.header.sizeOfProgramHeaderEntry,
-             elf.header.numberOfProgramHeaderEntries,
-             elf.header.sizeOfSectionHeaderEntry,
-             elf.header.numberOfSectionHeaderEntries,
-             elf.header.sectionHeaderStringTableIndex
+             header.identifier.data,
+             header.identifier.fileClass,
+             header.identifier.dataEncoding,
+             header.objectFileType,
+             header.machineISA,
+             header.version_,
+             header.identifier.osABI,
+             header.identifier.abiVersion,
+             header.entryPoint,
+             header.programHeaderOffset,
+             header.sectionHeaderOffset,
+             header.sizeOfProgramHeaderEntry,
+             header.numberOfProgramHeaderEntries,
+             header.sizeOfSectionHeaderEntry,
+             header.numberOfSectionHeaderEntries,
+             header.sectionHeaderStringTableIndex
         );
 }
 
