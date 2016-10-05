@@ -135,19 +135,28 @@ Program Headers:
              elf.header.numberOfProgramHeaderEntries,
              elf.header.programHeaderOffset
         );
-    auto phdrs = getProgramHeaders(elf);
-    foreach (phdr; phdrs)
+
+    // 64bit.
+    if (elf.header.identifier.fileClass == FileClass.class64)
     {
-        writefln("  %s %08#x %08#x %08#x %08#x %08#x %s %d",
-                 phdr.progtype,
-                 phdr.offset,
-                 phdr.vaddr,
-                 phdr.paddr,
-                 phdr.filesz,
-                 phdr.memsz,
-                 toString(phdr.flags),
-                 phdr.align_
-            );
+        ProgramHeader64[] phdrs = getProgramHeaders64(elf);
+        foreach (phdr; phdrs)
+        {
+            writefln("  %s %08#x %08#x %08#x %08#x %08#x %s %d",
+                     phdr.progtype,
+                     phdr.offset,
+                     phdr.vaddr,
+                     phdr.paddr,
+                     phdr.filesz,
+                     phdr.memsz,
+                     toString(phdr.flags),
+                     phdr.align_
+                );
+        }
+    }
+    else // 32bit.
+    {
+        assert(false);
     }
 }
 
@@ -163,7 +172,25 @@ string toString(ProgramFlags flags)
 }
 
 
-abstract class Phdr
+abstract class ProgramHeader
+{
+}
+
+
+final class ProgramHeader32 : ProgramHeader
+{
+    ProgramType progtype;
+    size_t offset;
+    size_t vaddr;
+    size_t paddr;
+    size_t filesz;
+    size_t memsz;
+    ProgramFlags flags;
+    size_t align_;
+}
+
+
+final class ProgramHeader64 : ProgramHeader
 {
     ProgramType progtype;
     ProgramFlags flags;
@@ -176,15 +203,10 @@ abstract class Phdr
 }
 
 
-final class Phdr64 : Phdr
-{
-}
-
-
 immutable sizeOfPogramHeader = 56;
 
 
-enum ProgramType
+enum ProgramType : uint
 {
     NULL = 0,
     LOAD = 1,
@@ -200,7 +222,7 @@ enum ProgramType
 }
 
 
-enum ProgramFlags
+enum ProgramFlags : uint
 {
     NONE = 0,
     EXECUTABLE = 1,
@@ -209,54 +231,62 @@ enum ProgramFlags
 }
 
 
-Phdr[] getProgramHeaders(ELF elf)
+ProgramHeader32[] getProgramHeaders32(ELF elf)
 {
     import std.system;
     import std.bitmanip : read;
 
     auto phdrLen = elf.header.numberOfProgramHeaderEntries;
-    Phdr[] phdrs;
+    ProgramHeader32[] phdrs;
     phdrs.reserve(phdrLen);
 
-    // 64bit.
-    if (elf.header.identifier.fileClass == FileClass.class64)
-    {
-        foreach (i; 0 .. phdrLen)
-        {
-            auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
-            auto phdr = new Phdr64;
-            auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
-
-            // littleEndian.
-            if (elf.header.identifier.dataEncoding == DataEncoding.littleEndian)
-            {
-                phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.littleEndian);
-                phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.littleEndian);
-                phdr.offset = buffer.read!(ulong, Endian.littleEndian);
-                phdr.vaddr = buffer.read!(ulong, Endian.littleEndian);
-                phdr.paddr = buffer.read!(ulong, Endian.littleEndian);
-                phdr.filesz = buffer.read!(ulong, Endian.littleEndian);
-                phdr.memsz = buffer.read!(ulong, Endian.littleEndian);
-                phdr.align_ = buffer.read!(ulong, Endian.littleEndian);
-            }
-            else  // bigEndian.
-            {
-                phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.bigEndian);
-                phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.bigEndian);
-                phdr.offset = buffer.read!(ulong, Endian.bigEndian);
-                phdr.vaddr = buffer.read!(ulong, Endian.bigEndian);
-                phdr.paddr = buffer.read!(ulong, Endian.bigEndian);
-                phdr.filesz = buffer.read!(ulong, Endian.bigEndian);
-                phdr.memsz = buffer.read!(ulong, Endian.bigEndian);
-                phdr.align_ = buffer.read!(ulong, Endian.bigEndian);
-            }
-            assert(buffer.length == 0);
-            phdrs ~= phdr;
-        }
-        return phdrs;
-    }
     // TODO: 32bit.
     assert(false, "Sorry, 32-bit arch is not supported yet.");
+}
+
+
+ProgramHeader64[] getProgramHeaders64(ELF elf)
+{
+    import std.system;
+    import std.bitmanip : read;
+
+    auto phdrLen = elf.header.numberOfProgramHeaderEntries;
+    ProgramHeader64[] phdrs;
+    phdrs.reserve(phdrLen);
+
+    foreach (i; 0 .. phdrLen)
+    {
+        auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
+        auto phdr = new ProgramHeader64;
+        auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
+
+        // littleEndian.
+        if (elf.header.identifier.dataEncoding == DataEncoding.littleEndian)
+        {
+            phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.littleEndian);
+            phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.littleEndian);
+            phdr.offset = buffer.read!(ulong, Endian.littleEndian);
+            phdr.vaddr = buffer.read!(ulong, Endian.littleEndian);
+            phdr.paddr = buffer.read!(ulong, Endian.littleEndian);
+            phdr.filesz = buffer.read!(ulong, Endian.littleEndian);
+            phdr.memsz = buffer.read!(ulong, Endian.littleEndian);
+            phdr.align_ = buffer.read!(ulong, Endian.littleEndian);
+        }
+        else  // bigEndian.
+        {
+            phdr.progtype = cast(ProgramType) buffer.read!(uint, Endian.bigEndian);
+            phdr.flags = cast(ProgramFlags) buffer.read!(uint, Endian.bigEndian);
+            phdr.offset = buffer.read!(ulong, Endian.bigEndian);
+            phdr.vaddr = buffer.read!(ulong, Endian.bigEndian);
+            phdr.paddr = buffer.read!(ulong, Endian.bigEndian);
+            phdr.filesz = buffer.read!(ulong, Endian.bigEndian);
+            phdr.memsz = buffer.read!(ulong, Endian.bigEndian);
+            phdr.align_ = buffer.read!(ulong, Endian.bigEndian);
+        }
+        assert(buffer.length == 0);
+        phdrs ~= phdr;
+    }
+    return phdrs;
 }
 
 
