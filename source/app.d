@@ -82,14 +82,13 @@ void main(string[] args)
 
 void printELFHeader(ELFHeader header)
 {
-    writefln(`
-ELF Header:
+    writefln(`ELF Header:
   Magic: %s
   Class: %s
   Data: %s
   Type: %s
   Machine: %s
-  Version: %#x
+  Version: %d
   OS/ABI: %s
   ABI Version: %s
   Entry point address: %#x
@@ -99,8 +98,7 @@ ELF Header:
   Number of program headers: %d
   Size of section headers: %d
   Number of section headers: %d
-  Section header string table index: %d
-`,
+  Section header string table index: %d`,
              header.identifier.data,
              header.identifier.fileClass,
              header.identifier.dataEncoding,
