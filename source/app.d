@@ -155,7 +155,7 @@ Program Headers:
     }
     else // 32bit.
     {
-        assert(false);
+        assert(false, "Sorry, 32-bit arch is not supported.");
     }
 }
 
@@ -227,20 +227,6 @@ enum ProgramFlags : uint
     EXECUTABLE = 1,
     WRITABLE = 2,
     READABLE = 3
-}
-
-
-ProgramHeader32[] getProgramHeaders32(ELF elf)
-{
-    import std.system;
-    import std.bitmanip : read;
-
-    auto phdrLen = elf.header.numberOfProgramHeaderEntries;
-    ProgramHeader32[] phdrs;
-    phdrs.reserve(phdrLen);
-
-    // TODO: 32bit.
-    assert(false, "Sorry, 32-bit arch is not supported yet.");
 }
 
 
