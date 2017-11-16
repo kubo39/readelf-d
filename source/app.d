@@ -15,10 +15,11 @@ USAGE:
  readelf-d [OPTION] elf-file..
  Display information about the contents of ELF format files
  Options are:
-  -a --all               Equivalent to: -h -l -S -s
+  -a --all               Equivalent to: -h -l -S -n -s
   -h --file-header       Display the ELF file header
   -l --program-headers   Display the program headers
   -S --section-headers   Display sections' headers
+  -n --notes             Display core notes
   -e --headers           Equivalent to: -h -l -S
   -s --symbols           Display the symbol table
   -H --help              Display this information
@@ -34,7 +35,7 @@ void main(string[] args)
         exit(1);
     }
 
-    bool help, all, fileHeader, programHeaders, sectionHeaders, allHeaders, symbols;
+    bool help, all, fileHeader, programHeaders, sectionHeaders, notes, allHeaders, symbols;
 
     getopt(
         args,
@@ -43,6 +44,7 @@ void main(string[] args)
         "h|file-header", &fileHeader,
         "l|program-headers", &programHeaders,
         "S|section-headers", &sectionHeaders,
+        "n|notes", &notes,
         "e|headers", &allHeaders,
         "s|symbols", &symbols,
         "H|help", &help
@@ -60,6 +62,7 @@ void main(string[] args)
         sectionHeaders = true;
         programHeaders = true;
         symbols = true;
+        notes = true;
     }
     if (allHeaders)
     {
@@ -76,6 +79,8 @@ void main(string[] args)
         printProgramHeaders(elf);
     if (sectionHeaders)
         printSectionHeaders(elf);
+    if (notes)
+        printNotes(elf);
     if (symbols)
         printSymbols(elf);
 }
@@ -325,4 +330,12 @@ Symbol table '%s' contains %d entries:
                 );
         }
     }
+}
+
+
+void printNotes(ELF elf)
+{
+    foreach (section; elf.sections)
+        if (section.type == SectionType.note)
+            writefln("Display notes found in: %s", section.name);
 }
