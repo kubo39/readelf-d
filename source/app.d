@@ -133,7 +133,7 @@ Entry point %#x
 There are %d program headers, starting at offset %d
 
 Program Headers:
-  Type Offset VirtAddr PhysAddr FileSiz MemSiz Flags Align`,
+  Type  Offset  VirtAddr  PhysAddr  FileSiz  MemSiz  Flags  Align`,
              elf.header.objectFileType,
              elf.header.entryPoint,
              elf.header.numberOfProgramHeaderEntries,
@@ -146,7 +146,7 @@ Program Headers:
         ProgramHeader64[] phdrs = getProgramHeaders64(elf);
         foreach (phdr; phdrs)
         {
-            writefln("  %s %08#x %08#x %08#x %08#x %08#x %s %d",
+            writefln("  %s  %08#x  %08#x  %08#x  %08#x  %08#x  %s  %d",
                      phdr.progtype,
                      phdr.offset,
                      phdr.vaddr,
