@@ -322,7 +322,7 @@ Symbol table '%s' contains %d entries:
                 name = symbol.name[0 .. 25];
             else
                 name = symbol.name;
-            writefln(`  [%d] %s %d %s %s %s %s %s`,
+            writefln(`  %d: %08#x %d %s %s %s %s %s`,
                      n,
                      symbol.value,
                      symbol.size,
