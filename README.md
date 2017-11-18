@@ -19,5 +19,6 @@ USAGE:
   -n --notes             Display core notes
   -e --headers           Equivalent to: -h -l -S
   -s --symbols           Display the symbol table
+  --debug-dump[=abbrev]  Display the contents of DWARF2 debug sections
   -H --help              Display this information
 ```

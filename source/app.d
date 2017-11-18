@@ -23,6 +23,7 @@ USAGE:
   -n --notes             Display core notes
   -e --headers           Equivalent to: -h -l -S
   -s --symbols           Display the symbol table
+  --debug-dump[=abbrev]  Display the contents of DWARF2 debug sections
   -H --help              Display this information
 `);
 }
@@ -36,7 +37,8 @@ void main(string[] args)
         exit(1);
     }
 
-    bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols, abbrev;
+    bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols;
+    string debugDump;
 
     getopt(
         args,
@@ -49,7 +51,7 @@ void main(string[] args)
         "n|notes", &notes,
         "e|headers", &allHeaders,
         "s|symbols", &symbols,
-        "wa", &abbrev,
+        "debug-dump", &debugDump,
         "H|help", &help
         );
 
@@ -88,8 +90,9 @@ void main(string[] args)
         printNotes(elf);
     if (symbols)
         printSymbols(elf);
-    if (abbrev)
-        printDebugAbbrev(elf);
+    if (debugDump.length)
+        if (debugDump == "abbrev")
+            printDebugAbbrev(elf);
 }
 
 
