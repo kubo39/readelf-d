@@ -1,4 +1,3 @@
-/* -*- d -*- */
 import elf;
 import elf.low;
 
