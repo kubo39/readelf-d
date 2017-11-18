@@ -19,6 +19,7 @@ USAGE:
   -h --file-header       Display the ELF file header
   -l --program-headers   Display the program headers
   -S --section-headers   Display sections' headers
+  --dyn-syms             Display the dynamic symbol table
   -n --notes             Display core notes
   -e --headers           Equivalent to: -h -l -S
   -s --symbols           Display the symbol table
@@ -35,7 +36,7 @@ void main(string[] args)
         exit(1);
     }
 
-    bool help, all, fileHeader, programHeaders, sectionHeaders, notes, allHeaders, symbols;
+    bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols;
 
     getopt(
         args,
@@ -44,6 +45,7 @@ void main(string[] args)
         "h|file-header", &fileHeader,
         "l|program-headers", &programHeaders,
         "S|section-headers", &sectionHeaders,
+        "dyn-syms", &dynsyms,
         "n|notes", &notes,
         "e|headers", &allHeaders,
         "s|symbols", &symbols,
@@ -79,6 +81,8 @@ void main(string[] args)
         printProgramHeaders(elf);
     if (sectionHeaders)
         printSectionHeaders(elf);
+    if (dynsyms)
+        printDynSyms(elf);
     if (notes)
         printNotes(elf);
     if (symbols)
@@ -329,6 +333,37 @@ Symbol table '%s' contains %d entries:
                      name
                 );
         }
+    }
+}
+
+
+void printDynSyms(ELF elf)
+{
+    auto section = elf.getSection(".dynsym");
+    if (section.isNull) return;
+    auto symbols = SymbolTable(section).symbols;
+    writeln(`
+Symbol table '.dynsym' contains %d entries:
+   Num: Value Size Type Bind Vis Ndx Name
+`, symbols.walkLength);
+
+    foreach (n, symbol; symbols.enumerate)
+    {
+        string name;
+        if (symbol.name.length > 25)
+            name = symbol.name[0 .. 25];
+        else
+            name = symbol.name;
+        writefln(`  %d: %08#x %d %s %s %s %s %s`,
+                 n,
+                 symbol.value,
+                 symbol.size,
+                 symbol.type,
+                 symbol.binding,
+                 symbol.info,
+                 symbol.sectionIndex,
+                 name
+            );
     }
 }
 
