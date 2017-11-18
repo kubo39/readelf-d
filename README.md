@@ -11,11 +11,13 @@ USAGE:
  readelf-d [OPTION] elf-file..
  Display information about the contents of ELF format files
  Options are:
-  -a --all               Equivalent to: -h -l -S -s
+  -a --all               Equivalent to: -h -l -S -n -s
   -h --file-header       Display the ELF file header
   -l --program-headers   Display the program headers
   -S --section-headers   Display sections' headers
+  --dyn-syms             Display the dynamic symbol table
+  -n --notes             Display core notes
   -e --headers           Equivalent to: -h -l -S
   -s --symbols           Display the symbol table
   -H --help              Display this information
- ```
+```
