@@ -36,7 +36,7 @@ void main(string[] args)
         exit(1);
     }
 
-    bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols;
+    bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols, abbrev;
 
     getopt(
         args,
@@ -49,6 +49,7 @@ void main(string[] args)
         "n|notes", &notes,
         "e|headers", &allHeaders,
         "s|symbols", &symbols,
+        "wa", &abbrev,
         "H|help", &help
         );
 
@@ -87,6 +88,8 @@ void main(string[] args)
         printNotes(elf);
     if (symbols)
         printSymbols(elf);
+    if (abbrev)
+        printDebugAbbrev(elf);
 }
 
 
@@ -373,4 +376,23 @@ void printNotes(ELF elf)
     foreach (section; elf.sections)
         if (section.type == SectionType.note)
             writefln("Display notes found in: %s", section.name);
+}
+
+
+void printDebugAbbrev(ELF elf)
+{
+    ELFSection section = elf.getSection(".debug_abbrev");
+    auto da = DebugAbbrev(section);
+
+    writeln(`
+Contents of the .debug_abbrev section:
+`);
+    foreach (i, tag; da.tags)
+    {
+        writefln("  Number TAG (0x%x)", tag.code);
+        writefln("   %d DW_TAG_%s [%s]", i, tag.name,
+                 tag.hasChildren ? "has children" : "no children");
+        foreach (attr; tag.attributes)
+            writefln("    DW_AT_%s\tDW_FORM_%s", attr.name, attr.form);
+    }
 }
