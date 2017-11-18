@@ -4,7 +4,7 @@
 		"Hiroki Noda"
 	],
     "dependencies": {
-        "elf-d": "0.2.1"
+        "elf-d": "~master"
     },
 	"targetType": "executable",
 	"description": "readelf implementation by D.",
