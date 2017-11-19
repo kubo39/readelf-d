@@ -1,10 +1,11 @@
+import core.stdc.stdlib : exit;
+
 import elf;
 import elf.low;
 
 import std.getopt;
 import std.range;
 import std.stdio;
-import core.stdc.stdlib : exit;
 
 
 void usage()
@@ -246,8 +247,8 @@ enum ProgramFlags : uint
 
 ProgramHeader64[] getProgramHeaders64(ELF elf)
 {
-    import std.system;
     import std.bitmanip : read;
+    import std.system : Endian;
 
     auto phdrLen = elf.header.numberOfProgramHeaderEntries;
     ProgramHeader64[] phdrs;
