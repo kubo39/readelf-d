@@ -95,9 +95,24 @@ void main(string[] args)
             printDebugAbbrev(elf);
 }
 
+string magicString(ELFIdent ident)
+{
+    import std.format : format;
+    string magic;
+    string formatTemplate = "%x %x %x %x %x %x %x %x %x %(%s %) %x";
+    with (ident)
+    {
+        magic = formatTemplate.format(mag0, mag1, mag2, mag3,
+                                      class_, data, version_,
+                                      osabi, abiversion,
+                                      pad, nident);
+    }
+    return magic;
+}
 
 void printELFHeader(ELFHeader header)
 {
+    auto magicString = magicString(header.identifier.data);
     writefln(`ELF Header:
   Magic: %s
   Class: %s
@@ -115,7 +130,7 @@ void printELFHeader(ELFHeader header)
   Size of section headers: %d
   Number of section headers: %d
   Section header string table index: %d`,
-             header.identifier.data,
+             magicString,
              header.identifier.fileClass,
              header.identifier.dataEncoding,
              header.objectFileType,
