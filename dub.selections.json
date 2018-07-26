@@ -1,6 +1,6 @@
 {
 	"fileVersion": 1,
 	"versions": {
-		"elf-d": "~master"
+		"elf-d": "0.2.4"
 	}
 }
