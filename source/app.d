@@ -1,64 +1,49 @@
-import core.stdc.stdlib : exit;
-
-import elf;
-import elf.low;
-
+import core.stdc.stdlib;
 import std.getopt;
 import std.range;
 import std.stdio;
 
+import elf;
+import elf.low;
 
-void usage()
-{
-    writeln(`readelf-d
-USAGE:
- readelf-d [OPTION] elf-file..
+enum USAGE = `readelf-d [OPTION] elf-file(s)
  Display information about the contents of ELF format files
- Options are:
-  -a --all               Equivalent to: -h -l -S -n -s
-  -h --file-header       Display the ELF file header
-  -l --program-headers   Display the program headers
-  -S --section-headers   Display sections' headers
-  --dyn-syms             Display the dynamic symbol table
-  -n --notes             Display core notes
-  -e --headers           Equivalent to: -h -l -S
-  -s --symbols           Display the symbol table
-  --debug-dump[=abbrev]  Display the contents of DWARF2 debug sections
-  -H --help              Display this information
-`);
-}
+ Options are:`;
 
-
-void main(string[] args)
+int main(string[] args)
 {
-    scope(failure)
-    {
-        usage();
-        exit(1);
-    }
-
     bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols;
     string debugDump;
 
-    getopt(
-        args,
+    auto helpInformation = args.getopt(
         std.getopt.config.caseSensitive,
-        "a|all", &all,
-        "h|file-header", &fileHeader,
-        "l|program-headers", &programHeaders,
-        "S|section-headers", &sectionHeaders,
-        "dyn-syms", &dynsyms,
-        "n|notes", &notes,
-        "e|headers", &allHeaders,
-        "s|symbols", &symbols,
-        "debug-dump", &debugDump,
-        "H|help", &help
+        "a|all", "Equivalent to: -h -l -S -n -s", &all,
+        "h|file-header", "Display the ELF file header", &fileHeader,
+        "l|program-headers", "Display the program headers", &programHeaders,
+        "S|section-headers", "Display sections' headers", &sectionHeaders,
+        "dyn-syms", "Display the dynamic symbol table", &dynsyms,
+        "n|notes", "Display core notes", &notes,
+        "e|headers", "Equivalent to: -h -l -S", &allHeaders,
+        "s|symbols", "Display the symbol table", &symbols,
+        "debug-dump", "Display the contents of DWARF2 debug sections", &debugDump,
+        "H|help", "Display this information", &help
         );
 
-    if (help || args.length < 2)
+    scope(failure)
     {
-        usage();
-        return;
+        defaultGetoptPrinter(USAGE, helpInformation.options);
+        return EXIT_FAILURE;
+    }
+
+    if (help)
+    {
+        defaultGetoptPrinter(USAGE, helpInformation.options);
+        return EXIT_SUCCESS;
+    }
+    else if (args.length < 2)
+    {
+        defaultGetoptPrinter(USAGE, helpInformation.options);
+        return EXIT_FAILURE;
     }
 
     if (all)
@@ -93,6 +78,8 @@ void main(string[] args)
     if (debugDump.length)
         if (debugDump == "abbrev")
             printDebugAbbrev(elf);
+
+    return EXIT_SUCCESS;
 }
 
 string magicString(ELFIdent ident)
