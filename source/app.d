@@ -318,7 +318,7 @@ void printSymbols(ELF elf)
     {
         auto s = elf.getSection(section);
         if (s.isNull) continue;  // skip if it hasn't.
-        auto symbols = SymbolTable(s).symbols;
+        auto symbols = SymbolTable(s.get()).symbols;
         writefln(`
 Symbol table '%s' contains %d entries:
   Num: Value Size Type Bind Vis Ndx Name`, section, symbols.walkLength);
@@ -349,7 +349,7 @@ void printDynSyms(ELF elf)
 {
     auto section = elf.getSection(".dynsym");
     if (section.isNull) return;
-    auto symbols = SymbolTable(section).symbols;
+    auto symbols = SymbolTable(section.get()).symbols;
     writeln(`
 Symbol table '.dynsym' contains %d entries:
    Num: Value Size Type Bind Vis Ndx Name
@@ -386,8 +386,9 @@ void printNotes(ELF elf)
 
 void printDebugAbbrev(ELF elf)
 {
-    ELFSection section = elf.getSection(".debug_abbrev");
-    auto da = DebugAbbrev(section);
+    auto section = elf.getSection(".debug_abbrev");
+    if (section.isNull) return;
+    auto da = DebugAbbrev(section.get());
 
     writeln(`
 Contents of the .debug_abbrev section:
