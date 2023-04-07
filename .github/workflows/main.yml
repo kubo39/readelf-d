@@ -1,0 +1,22 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    matrix:
+      dc:
+        - dmd-latest
+        - ldc-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: setup dlang
+      uses: dlang-community/setup-dlang@v1
+      with:
+        compiler: ${{ matrix.dc }}
+    
+    - name: build test
+      run: |
+        dub build
