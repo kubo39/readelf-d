@@ -156,13 +156,14 @@ Elf file type is %s
 Entry point %#x
 There are %d program headers, starting at offset %d
 
-Program Headers:
-  Type  Offset  VirtAddr  PhysAddr  FileSiz  MemSiz  Flags  Align`,
+Program Headers:`,
              elf.header.objectFileType,
              elf.header.entryPoint,
              elf.header.numberOfProgramHeaderEntries,
              elf.header.programHeaderOffset
         );
+  writefln("%08#s\t%08#s\t%08#s\t%08#s\n%08#s\t%08#s\t%08#s\t%s",
+           "Type", "Offset", "VirtAddr", "PhysAddr", "FileSiz", "MemSiz", "Flags", "Align");
 
     // 64bit.
     if (elf.header.identifier.fileClass == FileClass.class64)
@@ -170,7 +171,7 @@ Program Headers:
         ProgramHeader64[] phdrs = getProgramHeaders64(elf);
         foreach (phdr; phdrs)
         {
-            writefln("  %s  %08#x  %08#x  %08#x  %08#x  %08#x  %s  %d",
+            writefln("%08#s\t%08#x\t%08#x\t%08#x\n%08#x\t%08#x\t%08#s\t0x%x",
                      phdr.progtype,
                      phdr.offset,
                      phdr.vaddr,
@@ -244,6 +245,7 @@ enum ProgramType : uint
     SHLIB = 5,
     PHDR = 6,
     TLS = 7,
+    GNU_PEOPERTY = 0x6474e553,
     GNU_EH_FRAME = 0x6474e550,
     GNU_STACK = 0x6474e551,
     GNU_RELRO = 0x6474e552
