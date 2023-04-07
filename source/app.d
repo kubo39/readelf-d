@@ -19,7 +19,8 @@ enum Demangle
 
 int main(string[] args)
 {
-    bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols;
+    bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders,
+        symbols, wide;
     string debugDump;
     Demangle demangle = Demangle.dlang;
 
@@ -35,6 +36,7 @@ int main(string[] args)
         "s|symbols", "Display the symbol table", &symbols,
         "C|demangle", "Decode mangled/processed symbol name: [none, dlang(default)]", &demangle,
         "debug-dump", "Display the contents of DWARF2 debug sections", &debugDump,
+        "W", "Allow output width", &wide,
         "H|help", "Display this information", &help
         );
 
@@ -75,11 +77,11 @@ int main(string[] args)
         if (sectionHeaders)
             printSectionHeaders(elf);
         if (dynsyms)
-            printDynSyms(elf, demangle);
+            printDynSyms(elf, demangle, wide);
         if (notes)
             printNotes(elf);
         if (symbols)
-            printSymbols(elf, demangle);
+            printSymbols(elf, demangle, wide);
         if (debugDump.length)
             if (debugDump == "abbrev")
                 printDebugAbbrev(elf);
@@ -322,7 +324,7 @@ Section Headers:
 }
 
 
-void printSymbols(ELF elf, Demangle demangle)
+void printSymbols(ELF elf, Demangle demangle, bool wide)
 {
     foreach (section; only(".dynsym", ".symtab"))
     {
@@ -339,8 +341,9 @@ Symbol table '%s' contains %d entries:
                 ? std.demangle.demangle(symbol.name)
                 : symbol.name;
 
-            if (name.length > 25)
-                name = name[0 .. 25];
+            if (!wide)
+                if (name.length > 40)
+                    name = name[0 .. 40];
 
             writefln(`  %d: %08#x %d %s %s %s %s %s`,
                      n,
@@ -357,7 +360,7 @@ Symbol table '%s' contains %d entries:
 }
 
 
-void printDynSyms(ELF elf, Demangle demangle)
+void printDynSyms(ELF elf, Demangle demangle, bool wide)
 {
     auto section = elf.getSection(".dynsym");
     if (section.isNull) return;
@@ -372,8 +375,9 @@ Symbol table '.dynsym' contains %d entries:
         auto name = demangle == Demangle.dlang
             ? std.demangle.demangle(symbol.name)
             : symbol.name;
-        if (name.length > 25)
-            name = name[0 .. 25];
+        if (!wide)
+            if (name.length > 40)
+                name = name[0 .. 40];
 
         writefln(`  %d: %08#x %d %s %s %s %s %s`,
                  n,
