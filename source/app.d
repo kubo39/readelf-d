@@ -1,5 +1,7 @@
+static import core.demangle;
 import core.stdc.stdlib;
-static import std.demangle;
+
+import std.exception : assumeUnique;
 import std.getopt;
 import std.range;
 import std.stdio;
@@ -14,6 +16,7 @@ enum USAGE = `readelf-d [OPTION] elf-file
 enum Demangle
 {
     none,
+    cpp,
     dlang,
 }
 
@@ -34,7 +37,7 @@ int main(string[] args)
         "n|notes", "Display core notes", &notes,
         "e|headers", "Equivalent to: -h -l -S", &allHeaders,
         "s|symbols", "Display the symbol table", &symbols,
-        "C|demangle", "Decode mangled/processed symbol name: [none, dlang(default)]", &demangle,
+        "C|demangle", "Decode mangled/processed symbol name: [none, cpp, dlang(default)]", &demangle,
         "debug-dump", "Display the contents of DWARF2 debug sections", &debugDump,
         "W", "Allow output width", &wide,
         "H|help", "Display this information", &help
@@ -325,6 +328,25 @@ Section Headers:
                  section.addrAlign);
 }
 
+string getDemangledSymbolName(string symbolName, Demangle demangle)
+{
+    if (demangle == Demangle.dlang)
+    {
+        // This infers CXX demangle.
+        return core.demangle.demangle(symbolName, null,
+                                      core.demangle.getCXXDemangler())
+            .assumeUnique;
+    }
+    else if (demangle == Demangle.cpp)
+    {
+        // ignore D demangled symbols.
+        if (symbolName.length >= 2 && symbolName[0 .. 2] == "_Z")
+            return core.demangle.demangle(symbolName, null,
+                                          core.demangle.getCXXDemangler())
+                .assumeUnique;
+    }
+    return symbolName;
+}
 
 void printSymbols(ELF elf, Demangle demangle, bool wide)
 {
@@ -339,9 +361,7 @@ Symbol table '%s' contains %d entries:
 
         foreach (n, symbol; symbols.enumerate)
         {
-            auto name = demangle == Demangle.dlang
-                ? std.demangle.demangle(symbol.name)
-                : symbol.name;
+            string name = getDemangledSymbolName(symbol.name, demangle);
 
             if (!wide)
                 if (name.length > 40)
@@ -374,9 +394,8 @@ Symbol table '.dynsym' contains %d entries:
 
     foreach (n, symbol; symbols.enumerate)
     {
-        auto name = demangle == Demangle.dlang
-            ? std.demangle.demangle(symbol.name)
-            : symbol.name;
+        string name = getDemangledSymbolName(symbol.name, demangle);
+
         if (!wide)
             if (name.length > 40)
                 name = name[0 .. 40];
