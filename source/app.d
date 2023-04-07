@@ -7,7 +7,7 @@ import std.stdio;
 import elf;
 import elf.low;
 
-enum USAGE = `readelf-d [OPTION] elf-file(s)
+enum USAGE = `readelf-d [OPTION] elf-file
  Display information about the contents of ELF format files
  Options are:`;
 
