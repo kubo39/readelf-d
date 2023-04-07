@@ -29,12 +29,6 @@ int main(string[] args)
         "H|help", "Display this information", &help
         );
 
-    scope(failure)
-    {
-        defaultGetoptPrinter(USAGE, helpInformation.options);
-        return EXIT_FAILURE;
-    }
-
     if (help)
     {
         defaultGetoptPrinter(USAGE, helpInformation.options);
@@ -61,23 +55,30 @@ int main(string[] args)
         programHeaders = true;
     }
 
-    ELF elf = ELF.fromFile(args[1]);
+    try
+    {
+        ELF elf = ELF.fromFile(args[1]);
 
-    if (fileHeader)
-        printELFHeader(elf.header);
-    if (programHeaders)
-        printProgramHeaders(elf);
-    if (sectionHeaders)
-        printSectionHeaders(elf);
-    if (dynsyms)
-        printDynSyms(elf);
-    if (notes)
-        printNotes(elf);
-    if (symbols)
-        printSymbols(elf);
-    if (debugDump.length)
-        if (debugDump == "abbrev")
-            printDebugAbbrev(elf);
+        if (fileHeader)
+            printELFHeader(elf.header);
+        if (programHeaders)
+            printProgramHeaders(elf);
+        if (sectionHeaders)
+            printSectionHeaders(elf);
+        if (dynsyms)
+            printDynSyms(elf);
+        if (notes)
+            printNotes(elf);
+        if (symbols)
+            printSymbols(elf);
+        if (debugDump.length)
+            if (debugDump == "abbrev")
+                printDebugAbbrev(elf);
+    }
+    catch(Exception e) {
+        defaultGetoptPrinter(USAGE, helpInformation.options);
+        return EXIT_FAILURE;
+    }
 
     return EXIT_SUCCESS;
 }
