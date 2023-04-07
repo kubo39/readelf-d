@@ -1,4 +1,5 @@
 import core.stdc.stdlib;
+static import std.demangle;
 import std.getopt;
 import std.range;
 import std.stdio;
@@ -10,10 +11,17 @@ enum USAGE = `readelf-d [OPTION] elf-file(s)
  Display information about the contents of ELF format files
  Options are:`;
 
+enum Demangle
+{
+    none,
+    dlang,
+}
+
 int main(string[] args)
 {
     bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders, symbols;
     string debugDump;
+    Demangle demangle = Demangle.dlang;
 
     auto helpInformation = args.getopt(
         std.getopt.config.caseSensitive,
@@ -25,6 +33,7 @@ int main(string[] args)
         "n|notes", "Display core notes", &notes,
         "e|headers", "Equivalent to: -h -l -S", &allHeaders,
         "s|symbols", "Display the symbol table", &symbols,
+        "C|demangle", "Decode mangled/processed symbol name: [none, dlang(default)]", &demangle,
         "debug-dump", "Display the contents of DWARF2 debug sections", &debugDump,
         "H|help", "Display this information", &help
         );
@@ -66,11 +75,11 @@ int main(string[] args)
         if (sectionHeaders)
             printSectionHeaders(elf);
         if (dynsyms)
-            printDynSyms(elf);
+            printDynSyms(elf, demangle);
         if (notes)
             printNotes(elf);
         if (symbols)
-            printSymbols(elf);
+            printSymbols(elf, demangle);
         if (debugDump.length)
             if (debugDump == "abbrev")
                 printDebugAbbrev(elf);
@@ -313,7 +322,7 @@ Section Headers:
 }
 
 
-void printSymbols(ELF elf)
+void printSymbols(ELF elf, Demangle demangle)
 {
     foreach (section; only(".dynsym", ".symtab"))
     {
@@ -326,11 +335,13 @@ Symbol table '%s' contains %d entries:
 
         foreach (n, symbol; symbols.enumerate)
         {
-            string name;
-            if (symbol.name.length > 25)
-                name = symbol.name[0 .. 25];
-            else
-                name = symbol.name;
+            auto name = demangle == Demangle.dlang
+                ? std.demangle.demangle(symbol.name)
+                : symbol.name;
+
+            if (name.length > 25)
+                name = name[0 .. 25];
+
             writefln(`  %d: %08#x %d %s %s %s %s %s`,
                      n,
                      symbol.value,
@@ -346,7 +357,7 @@ Symbol table '%s' contains %d entries:
 }
 
 
-void printDynSyms(ELF elf)
+void printDynSyms(ELF elf, Demangle demangle)
 {
     auto section = elf.getSection(".dynsym");
     if (section.isNull) return;
@@ -358,11 +369,12 @@ Symbol table '.dynsym' contains %d entries:
 
     foreach (n, symbol; symbols.enumerate)
     {
-        string name;
-        if (symbol.name.length > 25)
-            name = symbol.name[0 .. 25];
-        else
-            name = symbol.name;
+        auto name = demangle == Demangle.dlang
+            ? std.demangle.demangle(symbol.name)
+            : symbol.name;
+        if (name.length > 25)
+            name = name[0 .. 25];
+
         writefln(`  %d: %08#x %d %s %s %s %s %s`,
                  n,
                  symbol.value,
