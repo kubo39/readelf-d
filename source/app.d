@@ -272,7 +272,7 @@ ProgramHeader64[] getProgramHeaders64(ELF elf)
     {
         auto start = elf.header.programHeaderOffset + sizeOfPogramHeader * i;
         auto phdr = new ProgramHeader64;
-        auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader].dup;
+        auto buffer = cast(ubyte[]) elf.m_file[start .. start + sizeOfPogramHeader][];
 
         // littleEndian.
         if (elf.header.identifier.dataEncoding == DataEncoding.littleEndian)
