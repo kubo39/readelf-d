@@ -421,7 +421,7 @@ string toString(AttributeForm form)
     case AttributeForm.sdata: return "sdata";
     case AttributeForm.strp: return "strp";
     case AttributeForm.udata: return "udata";
-    case AttributeForm.refAddr: return "refAddr";
+    case AttributeForm.refAddr: return "ref_addr";
     case AttributeForm.ref1: return "ref1";
     case AttributeForm.ref2: return "ref2";
     case AttributeForm.ref4: return "ref4";
