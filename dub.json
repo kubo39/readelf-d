@@ -7,7 +7,7 @@
         "elf-d": "0.2.5"
     },
 	"targetType": "executable",
-	"description": "readelf implementation by D.",
-	"copyright": "Copyright © 2016, hiroki.noda",
-	"license": "MIT"
+	"description": "Incomplete readelf implementation by D.",
+	"copyright": "Copyright © 2016-2023, Hiroki Noda",
+	"license": "BSL-1.0"
 }
