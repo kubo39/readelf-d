@@ -248,7 +248,7 @@ enum ProgramType : uint
     GNU_EH_FRAME = 0x6474e550,
     GNU_STACK = 0x6474e551,
     GNU_RELRO = 0x6474e552,
-    GNU_PEOPERTY = 0x6474e553,
+    GNU_PROPERTY = 0x6474e553,
 }
 
 
