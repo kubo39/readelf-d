@@ -402,6 +402,42 @@ void printNotes(ELF elf)
             writefln("Display notes found in: %s", section.name);
 }
 
+// specialized for AttributeForm.
+string toString(AttributeForm form)
+{
+    switch (form)
+    {
+    case AttributeForm.addr: return "addr";
+    case AttributeForm.block2: return "block2";
+    case AttributeForm.block4: return "block4";
+    case AttributeForm.data2: return "data2";
+    case AttributeForm.data4: return "data4";
+    case AttributeForm.data8: return "data8";
+    case AttributeForm.string_: return "string";
+    case AttributeForm.block: return "block";
+    case AttributeForm.block1: return "block1";
+    case AttributeForm.data1: return "data1";
+    case AttributeForm.flag: return "flag";
+    case AttributeForm.sdata: return "sdata";
+    case AttributeForm.strp: return "strp";
+    case AttributeForm.udata: return "udata";
+    case AttributeForm.refAddr: return "refAddr";
+    case AttributeForm.ref1: return "ref1";
+    case AttributeForm.ref2: return "ref2";
+    case AttributeForm.ref4: return "ref4";
+    case AttributeForm.ref8: return "ref8";
+    case AttributeForm.refUdata: return "refUdata";
+    case AttributeForm.indirect: return "indirect";
+
+    // DWARF 4.
+    case cast(AttributeForm) 0x17: return "sec_offset";
+    case cast(AttributeForm) 0x18: return "exprloc";
+    case cast(AttributeForm) 0x19: return "flag_present";
+    case cast(AttributeForm) 0x20: return "ref_sig8";
+
+    default: return "unknown";
+    }
+}
 
 void printDebugAbbrev(ELF elf)
 {
@@ -418,6 +454,6 @@ Contents of the .debug_abbrev section:
         writefln("   %d DW_TAG_%s [%s]", i, tag.name,
                  tag.hasChildren ? "has children" : "no children");
         foreach (attr; tag.attributes)
-            writefln("    DW_AT_%s\tDW_FORM_%s", attr.name, attr.form);
+            writefln("    DW_AT_%s\tDW_FORM_%s", attr.name, toString(attr.form));
     }
 }
