@@ -426,7 +426,7 @@ string toString(AttributeForm form)
     case AttributeForm.ref2: return "ref2";
     case AttributeForm.ref4: return "ref4";
     case AttributeForm.ref8: return "ref8";
-    case AttributeForm.refUdata: return "refUdata";
+    case AttributeForm.refUdata: return "ref_udata";
     case AttributeForm.indirect: return "indirect";
 
     // DWARF 4.
