@@ -20,11 +20,17 @@ enum Demangle
     dlang,
 }
 
+enum DebugDump
+{
+    none,
+    abbrev,
+}
+
 int main(string[] args)
 {
     bool help, all, fileHeader, programHeaders, sectionHeaders, dynsyms, notes, allHeaders,
         symbols, wide;
-    string debugDump;
+    DebugDump debugDump = DebugDump.none;
     Demangle demangle = Demangle.dlang;
 
     auto helpInformation = args.getopt(
@@ -85,9 +91,8 @@ int main(string[] args)
             printNotes(elf);
         if (symbols)
             printSymbols(elf, demangle, wide);
-        if (debugDump.length)
-            if (debugDump == "abbrev")
-                printDebugAbbrev(elf);
+        if (debugDump == DebugDump.abbrev)
+            printDebugAbbrev(elf);
     }
     catch(Exception e) {
         defaultGetoptPrinter(USAGE, helpInformation.options);
