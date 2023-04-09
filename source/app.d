@@ -369,8 +369,8 @@ Symbol table '%s' contains %d entries:
             string name = getDemangledSymbolName(symbol.name, demangle);
 
             if (!wide)
-                if (name.length > 40)
-                    name = name[0 .. 40];
+                if (name.length > 80)
+                    name = name[0 .. 80];
 
             writefln(`  %d: %08#x %d %s %s %s %s %s`,
                      n,
@@ -402,8 +402,8 @@ Symbol table '.dynsym' contains %d entries:
         string name = getDemangledSymbolName(symbol.name, demangle);
 
         if (!wide)
-            if (name.length > 40)
-                name = name[0 .. 40];
+            if (name.length > 80)
+                name = name[0 .. 80];
 
         writefln(`  %d: %08#x %d %s %s %s %s %s`,
                  n,
