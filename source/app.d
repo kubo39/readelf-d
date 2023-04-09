@@ -44,7 +44,7 @@ int main(string[] args)
         "e|headers", "Equivalent to: -h -l -S", &allHeaders,
         "s|symbols", "Display the symbol table", &symbols,
         "C|demangle", "Decode mangled/processed symbol name: [none, cpp, dlang(default)]", &demangle,
-        "debug-dump", "Display the contents of DWARF2 debug sections", &debugDump,
+        "debug-dump", "Display the contents of DWARF2 debug sections: [abbrev]", &debugDump,
         "W", "Allow output width", &wide,
         "H|help", "Display this information", &help
         );

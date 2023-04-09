@@ -18,7 +18,7 @@ readelf-d [OPTION] elf-file
 -e         --headers Equivalent to: -h -l -S
 -s         --symbols Display the symbol table
 -C        --demangle Decode mangled/processed symbol name: [none, cpp, dlang(default)]
-        --debug-dump Display the contents of DWARF2 debug sections
+        --debug-dump Display the contents of DWARF2 debug sections: [abbrev]
 -W                   Allow output width
 -H            --help Display this information
 -h            --help This help information.
