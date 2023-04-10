@@ -105,30 +105,26 @@ int main(string[] args)
 string magicString(ELFIdent ident)
 {
     import std.format : format;
-    string magic;
-    string formatTemplate = "%x %x %x %x %x %x %x %x %x %(%s %) %x";
     with (ident)
     {
-        magic = formatTemplate.format(mag0, mag1, mag2, mag3,
-                                      class_, data, version_,
-                                      osabi, abiversion,
-                                      pad, nident);
+        return format!"%x %x %x %x %x %x %x %x %x %(%s %) %x"(
+            mag0, mag1, mag2, mag3, class_, data, version_,
+            osabi, abiversion, pad, nident
+        );
     }
-    return magic;
 }
 
 void printELFHeader(ELFHeader header)
 {
-    auto magicString = magicString(header.identifier.data);
     writefln(`ELF Header:
   Magic: %s
   Class: %s
   Data: %s
-  Type: %s
-  Machine: %s
   Version: %d
   OS/ABI: %s
   ABI Version: %s
+  Type: %s
+  Machine: %s
   Entry point address: %#x
   Start of program headers: %d
   Start of section headers: %d
@@ -137,23 +133,23 @@ void printELFHeader(ELFHeader header)
   Size of section headers: %d
   Number of section headers: %d
   Section header string table index: %d`,
-             magicString,
-             header.identifier.fileClass,
-             header.identifier.dataEncoding,
-             header.objectFileType,
-             header.machineISA,
-             header.version_,
-             header.identifier.osABI,
-             header.identifier.abiVersion,
-             header.entryPoint,
-             header.programHeaderOffset,
-             header.sectionHeaderOffset,
-             header.sizeOfProgramHeaderEntry,
-             header.numberOfProgramHeaderEntries,
-             header.sizeOfSectionHeaderEntry,
-             header.numberOfSectionHeaderEntries,
-             header.sectionHeaderStringTableIndex
-        );
+            magicString(header.identifier.data),
+            header.identifier.fileClass,
+            header.identifier.dataEncoding,
+            header.version_,
+            header.identifier.osABI,
+            header.identifier.abiVersion,
+            header.objectFileType,
+            header.machineISA,
+            header.entryPoint,
+            header.programHeaderOffset,
+            header.sectionHeaderOffset,
+            header.sizeOfProgramHeaderEntry,
+            header.numberOfProgramHeaderEntries,
+            header.sizeOfSectionHeaderEntry,
+            header.numberOfSectionHeaderEntries,
+            header.sectionHeaderStringTableIndex
+    );
 }
 
 
@@ -201,11 +197,9 @@ Program Headers:`,
 // specialized for ProgramFlags.
 string toString(ProgramFlags flags)
 {
-    import std.format : format;
-    return format("%s%s%s",
-                  flags & ProgramFlags.READABLE ? "R" : " ",
-                  flags & ProgramFlags.WRITABLE ? "W" : " ",
-                  flags & ProgramFlags.EXECUTABLE ? "E" : " ");
+    return (flags & ProgramFlags.READABLE ? "R" : " ")
+      ~ (flags & ProgramFlags.WRITABLE ? "W" : " ")
+      ~ (flags & ProgramFlags.EXECUTABLE ? "E" : " ");
 }
 
 
