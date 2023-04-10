@@ -170,8 +170,8 @@ Program Headers:`,
              elf.header.numberOfProgramHeaderEntries,
              elf.header.programHeaderOffset
         );
-  writefln("%08#s\t%08#s\t%08#s\t%08#s\n%08#s\t%08#s\t%08#s\t%s",
-           "Type", "Offset", "VirtAddr", "PhysAddr", "FileSiz", "MemSiz", "Flags", "Align");
+    writefln("%08#s\t%08#s\t%08#s\t%08#s\n%08#s\t%08#s\t%08#s\t%s",
+             "Type", "Offset", "VirtAddr", "PhysAddr", "FileSiz", "MemSiz", "Flags", "Align");
 
     // 64bit.
     if (elf.header.identifier.fileClass == FileClass.class64)
